@@ -5,29 +5,52 @@ const formSearch = document.querySelector('.form-search'),
       dropdownCitiesTo = formSearch.querySelector('.dropdown__cities-to'),
       inputDateDepart = formSearch.querySelector('.input__date-depart');
 
-const city = ['Абакан', 'Азов', 'Александров', 'Алексин', 'Альметьевск', 'Анапа', 'Ангарск', 'Анжеро-Судженск', 'Апатиты', 'Арзамас', 'Армавир', 'Арсеньев', 'Артем', 'Архангельск', 'Асбест', 'Астрахань', 'Ачинск', 'Балаково', 'Балахна', 'Балашиха', 'Балашов', 'Барнаул', 'Батайск', 
-'Белебей', 'Белово', 'Белогорск (Амурская область)', 'Белорецк', 'Белореченск', 'Бердск', 'Березники', 'Березовский (Свердловская область)', 'Бийск', 'Биробиджан', 'Благовещенск (Амурская область)', 'Бор', 'Борисоглебск', 'Боровичи', 'Братск', 'Брянск', 'Бугульма', 'Буденновск', 'Бузулук', 'Буйнакск', 'Великие Луки', 'Великий Новгород', 'Верхняя Пышма', 'Видное', 'Владивосток', 'Владикавказ', 'Владимир', 'Волгоград', 'Волгодонск', 'Волжск', 'Волжский', 'Вологда', 'Вольск', 'Воркута', 'Воронеж', 'Воскресенск', 'Воткинск', 'Всеволожск', 'Выборг', 'Выкса', 
-'Гатчина', 'Геленджик', 'Георгиевск', 'Санкт-Петербург','Глазов', 'Горно-Алтайск', 'Грозный', 'Губкин', 'Гудермес', 'Гуково', 'Гусь-Хрустальный', 'Дербент', 'Дзержинск', 'Димитровград', 'Дмитров', 'Долгопрудный', 'Домодедово', 'Донской', 'Дубна', 'Евпатория', 'Егорьевск'];
+let city = [];
+
+const citiesApi = './data/cities.json',
+      calendarApi = 'http://min-prices.aviasales.ru/calendar_preload',
+      proxy = 'https://cors-anywhere.herokuapp.com/',
+      API_KEY = 'dc31f8ea337ade1355ed2df1d248c8d0';
+
+const getData = (url, API_KEY, callback) => {
+  const request = new XMLHttpRequest();
+  
+  request.open('GET', url);
+  request.addEventListener('readystatechange', () => {
+    // console.log(request.readyState);
+    if (request.readyState !==4) return;
+
+    if (request.status === 200) {
+      callback(request.response);
+      
+    } else {
+      console.error(request.status);
+      
+    }
+
+  });  
+  request.send();
+};
 
 const showCity = (input, list) => {
   list.textContent = '';
 
-  if (input.value === '') return;
+  if (input.value !== '') {
 
-  const filterCity = city.filter((item) => {
-    const fixItem = item.toLowerCase();
+    const filterCity = city.filter((item) => {
+      const fixItem = item.name.toLowerCase();
+      return fixItem.includes(input.value.toLowerCase());
 
-    return fixItem.includes(input.value.toLowerCase());
-  });
-  
-  filterCity.forEach((item) => {
-    const li = document.createElement('li');
-    li.classList.add('dropdown__city');
-    li.textContent = item;
-    list.appendChild(li);
-  });
-}
-
+    });
+    
+    filterCity.forEach((item) => {
+      const li = document.createElement('li');
+      li.classList.add('dropdown__city');
+      li.textContent = item.name;
+      list.appendChild(li);
+    });
+  }
+};
 
 const clickCity = (event, input, list) => {
   const target = event.target;
@@ -51,4 +74,8 @@ dropdownCitiesFrom.addEventListener('click', (event) => {
 
 dropdownCitiesTo.addEventListener('click', (event) => {
   clickCity(event, inputIitiesTo, dropdownCitiesTo);
+});
+
+getData(citiesApi, API_KEY, (data) => {
+  city = JSON.parse(data).filter((item) => item.name);
 });
