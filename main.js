@@ -12,8 +12,9 @@ const citiesApi = './data/cities.json',
       proxy = 'https://cors-anywhere.herokuapp.com/',
       API_KEY = 'dc31f8ea337ade1355ed2df1d248c8d0';
 
-const getData = (url, API_KEY, callback) => {
+const getData = (url, callback) => {
   const request = new XMLHttpRequest();
+
   
   request.open('GET', url);
   request.addEventListener('readystatechange', () => {
@@ -34,7 +35,8 @@ const getData = (url, API_KEY, callback) => {
 
 const showCity = (input, list) => {
   list.textContent = '';
-
+  
+  
   if (input.value !== '') {
 
     const filterCity = city.filter((item) => {
@@ -60,6 +62,27 @@ const clickCity = (event, input, list) => {
   }
 };
 
+const renderCheapYear = (cheapTicketYear) => {
+  //ДЗ  Усложненное 1
+  cheapTicketYear.sort((a, b) => a.value > b.value ? 1 : -1);
+  console.log(cheapTicketYear);
+};
+
+const renderCheapDay = (cheapTicketDay) => {
+  console.log(cheapTicketDay);
+};
+
+const renderCheck = (data, date) => {
+  const cheapTicketYear = JSON.parse(data).best_prices;
+  const cheapTicketDay = cheapTicketYear.filter((item) => {
+    return item.depart_date === date;
+  });
+
+renderCheapDay(cheapTicketDay);
+renderCheapYear(cheapTicketYear);
+
+};
+
 inputCitiesFrom.addEventListener('input', () => {
   showCity(inputCitiesFrom, dropdownCitiesFrom);
 });
@@ -76,6 +99,26 @@ dropdownCitiesTo.addEventListener('click', (event) => {
   clickCity(event, inputIitiesTo, dropdownCitiesTo);
 });
 
-getData(citiesApi, API_KEY, (data) => {
+formSearch.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const formData = {
+    from: city.find( (item) => inputCitiesFrom.value === item.name).code,
+    to: city.find( (item) => inputIitiesTo.value === item.name).code,
+    when: inputDateDepart.value
+  };
+
+  const requestData = `?depart_date=${formData.when}&origin=${formData.from}&destination=${formData.to}&one_way=true`;
+  
+  getData(calendarApi+requestData, (response) => {
+    renderCheck(response, formData.when);
+
+    
+  });           
+});
+
+
+getData(citiesApi, (data) => {
   city = JSON.parse(data).filter((item) => item.name);
+  console.log(city);
+  
 });
