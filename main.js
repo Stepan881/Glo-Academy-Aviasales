@@ -157,7 +157,7 @@ const renderCheapYear = (cheapTickets) => {
     otherCheapTickets.appendChild(ticket);
   }
 
-    console.log(cheapTickets);
+    // console.log(cheapTickets);
 };
 
 const renderCheapDay = (cheapTicket) => {
@@ -209,7 +209,7 @@ formSearch.addEventListener('submit', (event) => {
         renderCheck(response, formData.when);
       });  
   } else {
-    console.log('Не найден город');    
+    // console.log('Не найден город');    
   }        
 });
 
